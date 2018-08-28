@@ -11,6 +11,7 @@ import (
 )
 
 func main() {
+	repo := api.TimeEventRepository{}
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestID)
@@ -20,7 +21,7 @@ func main() {
 	r.Use(middleware.Timeout(100 * time.Millisecond))
 
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		te := api.TimeEvent{time.Now(), "1:1", "Trias", 60, "Programming", "Devel", false}
+		te := repo.LoadAllEvents()
 
 		respondWithJSON(w, http.StatusOK, te)
 	})
