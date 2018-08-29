@@ -32,7 +32,7 @@ func (t *TimeEventRepository) LoadAllEvents() []TimeEvent {
 	stmt, err := t.db.Prepare("SELECT dia, tipo, quem, tempo_ocupado, tema, departamento, recorrente FROM time_event")
 
 	if err != nil {
-		panic(err.Error())
+		log.Fatal(err)
 	}
 	defer stmt.Close()
 
