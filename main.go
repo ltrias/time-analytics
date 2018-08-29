@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	repo := api.TimeEventRepository{}
+	repo := api.NewTimeEventRepository()
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestID)
