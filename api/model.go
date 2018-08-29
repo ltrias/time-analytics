@@ -6,6 +6,7 @@ import (
 
 //TimeEvent represents a time event such as a meeting
 type TimeEvent struct {
+	ID         uint      `json:"id"`
 	Day        time.Time `json:"day"`
 	Type       string    `json:"type"`
 	Who        string    `json:"who"`
