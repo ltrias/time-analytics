@@ -29,7 +29,7 @@ func NewTimeEventRepository() *TimeEventRepository {
 
 //LoadAllEvents loads all events
 func (t *TimeEventRepository) LoadAllEvents() []TimeEvent {
-	stmt, err := t.db.Prepare("SELECT dia, tipo, quem, tempo_ocupado, tema, departamento, recorrente FROM time_event")
+	stmt, err := t.db.Prepare("SELECT id, dia, tipo, quem, tempo_ocupado, tema, departamento, recorrente FROM time_event")
 
 	if err != nil {
 		log.Fatal(err)
@@ -42,7 +42,7 @@ func (t *TimeEventRepository) LoadAllEvents() []TimeEvent {
 
 	for rows.Next() {
 		r := TimeEvent{}
-		err := rows.Scan(&r.Day, &r.Type, &r.Who, &r.Duration, &r.Subject, &r.Department, &r.Recurrent)
+		err := rows.Scan(&r.ID, &r.Day, &r.Type, &r.Who, &r.Duration, &r.Subject, &r.Department, &r.Recurrent)
 
 		if err != nil {
 			log.Fatal(err)
