@@ -10,8 +10,10 @@ import (
 	"github.com/ltrias/time-analytics/api"
 )
 
+var repo *api.TimeEventRepository = api.NewTimeEventRepository()
+
 func main() {
-	repo := api.NewTimeEventRepository()
+
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestID)
@@ -20,13 +22,17 @@ func main() {
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Timeout(100 * time.Millisecond))
 
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		te := repo.LoadAllEvents()
-
-		respondWithJSON(w, http.StatusOK, te)
+	r.Route("/", func(r chi.Router) {
+		r.Get("/", loadAllEvents)
 	})
 
 	http.ListenAndServe(":8080", r)
+}
+
+func loadAllEvents(w http.ResponseWriter, r *http.Request) {
+	te := repo.LoadAllEvents()
+
+	respondWithJSON(w, http.StatusOK, te)
 }
 
 func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
