@@ -23,6 +23,8 @@ func main() {
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Timeout(100 * time.Millisecond))
 
+	r.Get("/suggest", loadSuggest)
+
 	r.Route("/events", func(r chi.Router) {
 		r.Get("/", loadAllEvents)
 
@@ -32,6 +34,12 @@ func main() {
 	})
 
 	http.ListenAndServe(":8080", r)
+}
+
+func loadSuggest(w http.ResponseWriter, r *http.Request) {
+	suggest := api.Suggest{}
+
+	respondWithJSON(w, http.StatusOK, suggest)
 }
 
 func loadAllEvents(w http.ResponseWriter, r *http.Request) {

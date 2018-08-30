@@ -15,3 +15,12 @@ type TimeEvent struct {
 	Department string    `json:"department"`
 	Recurrent  bool      `json:"recurrent"`
 }
+
+//Suggest holds information about suggest
+type Suggest struct {
+	Type       []string `json:"type"`
+	Who        []string `json:"who"`
+	Duration   []int    `json:"duration"`
+	Subject    []string `json:"subject"`
+	Department []string `json:"department"`
+}
