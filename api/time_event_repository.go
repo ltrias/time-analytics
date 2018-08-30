@@ -2,7 +2,9 @@ package api
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
+	"strconv"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -23,6 +25,44 @@ func NewTimeEventRepository() *TimeEventRepository {
 	}
 
 	result.db = db
+
+	return result
+}
+
+func loadSuggest(field string, db *sql.DB) []string {
+	query := fmt.Sprintf("SELECT DISTINCT %s FROM time_event ORDER BY %s ASC", field, field)
+
+	rows, err := db.Query(query)
+
+	var result []string
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var r string
+		rows.Scan(&r)
+
+		result = append(result, r)
+	}
+
+	return result
+}
+
+func (t *TimeEventRepository) LoadDurationSuggest() []int {
+	temp := loadSuggest("tempo_ocupado", t.db)
+
+	log.Println(len(temp))
+
+	var result []int
+
+	for _, v := range temp {
+		intV, _ := strconv.Atoi(v)
+		result = append(result, intV)
+		// log.Println(fmt.Sprintf("%d->%s", i, v))
+	}
 
 	return result
 }
