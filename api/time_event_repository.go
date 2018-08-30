@@ -51,6 +51,26 @@ func loadSuggest(field string, db *sql.DB) []string {
 	return result
 }
 
+func (t *TimeEventRepository) LoadTypeSuggest() []string {
+	return loadSuggest("tipo", t.db)
+}
+
+// func (t *TimeEventRepository) LoadTypeSuggest() []string {
+// 	return loadSuggest("", t.db)
+// }
+
+// func (t *TimeEventRepository) LoadTypeSuggest() []string {
+// 	return loadSuggest("", t.db)
+// }
+
+// func (t *TimeEventRepository) LoadTypeSuggest() []string {
+// 	return loadSuggest("", t.db)
+// }
+
+// func (t *TimeEventRepository) LoadTypeSuggest() []string {
+// 	return loadSuggest("", t.db)
+// }
+
 func (t *TimeEventRepository) LoadDurationSuggest() []int {
 	temp := loadSuggest("tempo_ocupado", t.db)
 
@@ -61,7 +81,6 @@ func (t *TimeEventRepository) LoadDurationSuggest() []int {
 	for _, v := range temp {
 		intV, _ := strconv.Atoi(v)
 		result = append(result, intV)
-		// log.Println(fmt.Sprintf("%d->%s", i, v))
 	}
 
 	return result
