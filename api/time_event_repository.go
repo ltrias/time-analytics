@@ -55,9 +55,9 @@ func (t *TimeEventRepository) LoadTypeSuggest() []string {
 	return loadSuggest("tipo", t.db)
 }
 
-// func (t *TimeEventRepository) LoadTypeSuggest() []string {
-// 	return loadSuggest("", t.db)
-// }
+func (t *TimeEventRepository) LoadWhoSuggest() []string {
+	return loadSuggest("quem", t.db)
+}
 
 // func (t *TimeEventRepository) LoadTypeSuggest() []string {
 // 	return loadSuggest("", t.db)
