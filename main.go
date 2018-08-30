@@ -39,6 +39,7 @@ func main() {
 func loadSuggest(w http.ResponseWriter, r *http.Request) {
 	suggest := api.Suggest{}
 
+	suggest.Type = repo.LoadTypeSuggest()
 	suggest.Duration = repo.LoadDurationSuggest()
 
 	respondWithJSON(w, http.StatusOK, suggest)
