@@ -70,8 +70,6 @@ func (t *TimeEventRepository) LoadDepartmentSuggest() []string {
 func (t *TimeEventRepository) LoadDurationSuggest() []int {
 	temp := loadSuggest("tempo_ocupado", t.db)
 
-	log.Println(len(temp))
-
 	var result []int
 
 	for _, v := range temp {
