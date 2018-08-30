@@ -63,13 +63,9 @@ func (t *TimeEventRepository) LoadSubjectSuggest() []string {
 	return loadSuggest("tema", t.db)
 }
 
-// func (t *TimeEventRepository) LoadTypeSuggest() []string {
-// 	return loadSuggest("", t.db)
-// }
-
-// func (t *TimeEventRepository) LoadTypeSuggest() []string {
-// 	return loadSuggest("", t.db)
-// }
+func (t *TimeEventRepository) LoadDepartmentSuggest() []string {
+	return loadSuggest("departamento", t.db)
+}
 
 func (t *TimeEventRepository) LoadDurationSuggest() []int {
 	temp := loadSuggest("tempo_ocupado", t.db)
