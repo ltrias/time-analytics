@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/go-chi/chi"
@@ -22,8 +23,12 @@ func main() {
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Timeout(100 * time.Millisecond))
 
-	r.Route("/", func(r chi.Router) {
+	r.Route("/events", func(r chi.Router) {
 		r.Get("/", loadAllEvents)
+
+		r.Route("/{eventID:\\d+}", func(r chi.Router) {
+			r.Get("/", loadEvent)
+		})
 	})
 
 	http.ListenAndServe(":8080", r)
@@ -33,6 +38,20 @@ func loadAllEvents(w http.ResponseWriter, r *http.Request) {
 	te := repo.LoadAllEvents()
 
 	respondWithJSON(w, http.StatusOK, te)
+}
+
+func loadEvent(w http.ResponseWriter, r *http.Request) {
+
+	if eventID := chi.URLParam(r, "eventID"); eventID != "" {
+		iEventId, _ := strconv.Atoi(eventID)
+		respondWithJSON(w, http.StatusOK, repo.LoadEvent(iEventId))
+	} else {
+		respondWithError(w, http.StatusBadRequest, "")
+	}
+}
+
+func respondWithError(w http.ResponseWriter, code int, message string) {
+	respondWithJSON(w, code, map[string]string{"error": message})
 }
 
 func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {

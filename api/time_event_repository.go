@@ -27,6 +27,24 @@ func NewTimeEventRepository() *TimeEventRepository {
 	return result
 }
 
+func (t *TimeEventRepository) LoadEvent(id int) TimeEvent {
+	stmt, err := t.db.Prepare("SELECT id, dia, tipo, quem, tempo_ocupado, tema, departamento, recorrente FROM time_event WHERE id=?")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer stmt.Close()
+
+	var result TimeEvent
+	err = stmt.QueryRow(id).Scan(&result.ID, &result.Day, &result.Type, &result.Who, &result.Duration, &result.Subject, &result.Department, &result.Recurrent)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return result
+}
+
 //LoadAllEvents loads all events
 func (t *TimeEventRepository) LoadAllEvents() []TimeEvent {
 	stmt, err := t.db.Prepare("SELECT id, dia, tipo, quem, tempo_ocupado, tema, departamento, recorrente FROM time_event")
