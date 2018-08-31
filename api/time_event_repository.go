@@ -89,6 +89,7 @@ func (t *TimeEventRepository) LoadEvent(id int) TimeEvent {
 	defer stmt.Close()
 
 	var result TimeEvent
+
 	err = stmt.QueryRow(id).Scan(&result.ID, &result.Day, &result.Type, &result.Who, &result.Duration, &result.Subject, &result.Department, &result.Recurrent)
 
 	if err != nil {
