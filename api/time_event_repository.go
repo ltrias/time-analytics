@@ -2,6 +2,7 @@ package api
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"strconv"
@@ -21,7 +22,7 @@ func NewTimeEventRepository() *TimeEventRepository {
 	db, err := sql.Open("mysql", "root:@tcp(localhost:3306)/time_analytics?parseTime=true")
 
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	result.db = db
@@ -37,7 +38,7 @@ func loadSuggest(field string, db *sql.DB) []string {
 	var result []string
 
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 	defer rows.Close()
 
@@ -84,7 +85,7 @@ func (t *TimeEventRepository) LoadEvent(id int) TimeEvent {
 	stmt, err := t.db.Prepare("SELECT id, dia, tipo, quem, tempo_ocupado, tema, departamento, recorrente FROM time_event WHERE id=?")
 
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 	defer stmt.Close()
 
@@ -93,7 +94,7 @@ func (t *TimeEventRepository) LoadEvent(id int) TimeEvent {
 	err = stmt.QueryRow(id).Scan(&result.ID, &result.Day, &result.Type, &result.Who, &result.Duration, &result.Subject, &result.Department, &result.Recurrent)
 
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	return result
@@ -104,7 +105,7 @@ func (t *TimeEventRepository) LoadAllEvents() []TimeEvent {
 	stmt, err := t.db.Prepare("SELECT id, dia, tipo, quem, tempo_ocupado, tema, departamento, recorrente FROM time_event")
 
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 	defer stmt.Close()
 
@@ -117,7 +118,7 @@ func (t *TimeEventRepository) LoadAllEvents() []TimeEvent {
 		err := rows.Scan(&r.ID, &r.Day, &r.Type, &r.Who, &r.Duration, &r.Subject, &r.Department, &r.Recurrent)
 
 		if err != nil {
-			log.Fatal(err)
+			panic(err)
 		}
 		result = append(result, r)
 	}
@@ -130,34 +131,39 @@ func (t *TimeEventRepository) InsertOrUpdateEvent(e TimeEvent) (TimeEvent, error
 	ustmt, err := t.db.Prepare("UPDATE time_event SET dia=?, tipo=?, quem=?, tempo_ocupado=?, tema=?, departamento=?, recorrente=? WHERE id=?")
 	defer ustmt.Close()
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	res, err := ustmt.Exec(e.Day, e.Type, e.Who, e.Duration, e.Subject, e.Department, e.Recurrent, e.ID)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	ra, err := res.RowsAffected()
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	if ra == 0 {
+		if e.ID > 0 {
+			log.Println("Update on not found line")
+			return e, errors.New("Not found")
+		}
+
 		istmt, err := t.db.Prepare("INSERT INTO time_event (dia, tipo, quem, tempo_ocupado, tema, departamento, recorrente) VALUES (?, ?, ?, ?, ?, ?, ?)")
 		defer istmt.Close()
 		if err != nil {
-			log.Fatal(err)
+			panic(err)
 		}
 
 		res, err := istmt.Exec(e.Day, e.Type, e.Who, e.Duration, e.Subject, e.Department, e.Recurrent)
 		if err != nil {
-			log.Fatal(err)
+			panic(err)
 		}
 
 		id, err := res.LastInsertId()
 		if err != nil {
-			log.Fatal(err)
+			panic(err)
 		}
 
 		e.ID = int(id)
