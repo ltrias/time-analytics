@@ -11,7 +11,7 @@ import (
 	"github.com/ltrias/time-analytics/api"
 )
 
-var repo *api.TimeEventRepository = api.NewTimeEventRepository()
+var repo = api.NewTimeEventRepository()
 
 func main() {
 
@@ -51,7 +51,12 @@ func createEvent(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, err.Error())
 	}
 
-	m, _ := json.Marshal(event)
+	event, err = repo.InsertOrUpdateEvent(event)
+	if err != nil {
+		respondWithError(w, http.StatusNotAcceptable, err.Error())
+	}
+
+	respondWithJSON(w, http.StatusCreated, event)
 }
 
 func loadSuggest(w http.ResponseWriter, r *http.Request) {
@@ -75,8 +80,8 @@ func loadAllEvents(w http.ResponseWriter, r *http.Request) {
 func loadEvent(w http.ResponseWriter, r *http.Request) {
 
 	if eventID := chi.URLParam(r, "eventID"); eventID != "" {
-		iEventId, _ := strconv.Atoi(eventID)
-		respondWithJSON(w, http.StatusOK, repo.LoadEvent(iEventId))
+		iEventID, _ := strconv.Atoi(eventID)
+		respondWithJSON(w, http.StatusOK, repo.LoadEvent(iEventID))
 	} else {
 		respondWithError(w, http.StatusBadRequest, "")
 	}

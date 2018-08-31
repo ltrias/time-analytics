@@ -124,3 +124,44 @@ func (t *TimeEventRepository) LoadAllEvents() []TimeEvent {
 
 	return result
 }
+
+//InsertOrUpdateEvent using split methods is more efficient but I also have to write more code
+func (t *TimeEventRepository) InsertOrUpdateEvent(e TimeEvent) (TimeEvent, error) {
+	ustmt, err := t.db.Prepare("UPDATE time_event SET dia=?, tipo=?, quem=?, tempo_ocupado=?, tema=?, departamento=?, recorrente=? WHERE id=?")
+	defer ustmt.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	res, err := ustmt.Exec(e.Day, e.Type, e.Who, e.Duration, e.Subject, e.Department, e.Recurrent, e.ID)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	ra, err := res.RowsAffected()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if ra == 0 {
+		istmt, err := t.db.Prepare("INSERT INTO time_event (dia, tipo, quem, tempo_ocupado, tema, departamento, recorrente) VALUES (?, ?, ?, ?, ?, ?, ?)")
+		defer istmt.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		res, err := istmt.Exec(e.Day, e.Type, e.Who, e.Duration, e.Subject, e.Department, e.Recurrent)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		id, err := res.LastInsertId()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		e.ID = int(id)
+	}
+
+	return e, nil
+}
