@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -27,6 +28,7 @@ func main() {
 
 	r.Route("/events", func(r chi.Router) {
 		r.Get("/", loadAllEvents)
+		r.Post("/", createEvent)
 
 		r.Route("/{eventID:\\d+}", func(r chi.Router) {
 			r.Get("/", loadEvent)
@@ -34,6 +36,24 @@ func main() {
 	})
 
 	http.ListenAndServe(":8080", r)
+}
+
+func createEvent(w http.ResponseWriter, r *http.Request) {
+	var event api.TimeEvent
+	decoder := json.NewDecoder(r.Body)
+
+	err := decoder.Decode(&event)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+	}
+
+	err = event.Validate()
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+	}
+
+	m, _ := json.Marshal(event)
+	log.Println(string(m))
 }
 
 func loadSuggest(w http.ResponseWriter, r *http.Request) {
