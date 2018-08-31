@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -53,7 +52,6 @@ func createEvent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	m, _ := json.Marshal(event)
-	log.Println(string(m))
 }
 
 func loadSuggest(w http.ResponseWriter, r *http.Request) {
